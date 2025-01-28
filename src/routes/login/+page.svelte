@@ -3,8 +3,8 @@
     import { writable } from 'svelte/store';
 
     export let data;
-    let { supabase, session } = data
-    $: ({ supabase, session } = data)
+    let { supabase, session } = data;
+    $: ({ supabase, session } = data);
 
     let email = '';
     let password = '';
@@ -20,10 +20,8 @@
 
         let response;
         if ($isLogin) {
-            // Login
             response = await supabase.auth.signInWithPassword({ email, password });
         } else {
-            // Sign up
             response = await supabase.auth.signUp({ email, password });
         }
 
@@ -32,6 +30,19 @@
         } else {
             success.set($isLogin ? 'Logged in successfully! Redirecting...' : 'Account created! Check your email to confirm.');
             setTimeout(() => location.href = '/', 1500);
+        }
+
+        loading.set(false);
+    }
+
+    async function loginWithDiscord() {
+        loading.set(true);
+        error.set('');
+
+        const { error: authError } = await supabase.auth.signInWithOAuth({ provider: 'discord' });
+
+        if (authError) {
+            error.set(authError.message);
         }
 
         loading.set(false);
@@ -74,6 +85,14 @@
             {:else}
                 { $isLogin ? 'Login' : 'Sign Up' }
             {/if}
+        </button>
+
+        <button
+            on:click={loginWithDiscord}
+            class="w-full mt-2 px-4 py-2 rounded bg-blue-600 text-white font-bold hover:bg-blue-700 transition"
+            disabled={$loading}
+        >
+            Login with Discord
         </button>
 
         <p class="text-sm text-center mt-4">

@@ -14,7 +14,7 @@ export async function POST({ request }) {
         // Format messages correctly
         const formattedMessages = messages.map(msg => ({
             role: msg.role,
-            parts: (msg.parts || msg.content || []).map(part => ({ text: part.text })) 
+            parts: (msg.parts || msg.content || []).map(part => ({ text: `Reply as a therapist to the following prompt: ${part.text}` })) 
             // Ensure both "parts" and "content" are handled
         }));
 
